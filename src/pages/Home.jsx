@@ -310,7 +310,7 @@ const RecommendPage = () => {
         formData.append("file", file);
 
         try {
-            const response = await fetch("https://thenikhil-fashion-recommender-api.hf.space/recommend", { method: "POST", body: formData });
+            const response = await fetch("https://modelbynikhil-fashion-recommendation-api.hf.space/recommend", { method: "POST", body: formData });
             if (!response.ok) throw new Error("Failed to get recommendations. Please try another image.");
             const data = await response.json();
             setRecommendations(data.recommendations || []);
