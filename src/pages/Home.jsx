@@ -345,7 +345,7 @@ const SearchRecommendPage = ({ query }) => {
             };
             setLoading(true);
             try {
-                const res = await fetch(`https://thenikhil-fashion-search-api.hf.space/recommend?query=${encodeURIComponent(query)}`);
+                const res = await fetch(`https://modelbynikhil-fashion-recommendation-api.hf.space/recommend?query=${encodeURIComponent(query)}`);
                 if (!res.ok) throw new Error("Search failed. Please try again.");
                 const data = await res.json();
                 setResults(data || []);
