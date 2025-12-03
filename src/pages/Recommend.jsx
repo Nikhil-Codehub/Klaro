@@ -14,7 +14,7 @@ const Recommend = () => {
     formData.append("file", file);
 
     try {
-      const response = await fetch("https://thenikhil-fashion-recommender-api.hf.space/recommend", {
+      const response = await fetch("https://modelbynikhil-fashion-recommendation-api.hf.space/recommend", {
         method: "POST",
         body: formData
       });
