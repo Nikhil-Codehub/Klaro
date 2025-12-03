@@ -15,7 +15,7 @@ const SearchRecommend = () => {
       setLoading(true);
       try {
         const res = await fetch(
-          `https://thenikhil-fashion-search-api.hf.space/recommend?query=${encodeURIComponent(query)}`
+          `https://ModelByNikhil-fashion-search-api.hf.space/recommend?query=${encodeURIComponent(query)}`
         );
         const data = await res.json();
         setResults(data);
