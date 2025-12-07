@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Helper component for Icons, using SVG for self-containment
+// Helper component for Icons
 const Icon = ({ name, className }) => {
     const icons = {
         menu: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
@@ -13,7 +13,9 @@ const Icon = ({ name, className }) => {
         upload: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></>,
         search: <><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></>,
         brain: <><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v1.2a1 1 0 0 0 1 1 1 1 0 0 1 1 1.5 1 1 0 0 0 1 1h.2a2.5 2.5 0 0 1 2.3 2.3v1.3a1 1 0 0 0 .8.9 1 1 0 0 1 .5 1.8 1 1 0 0 0 0 1.9 1 1 0 0 1-.5 1.8 1 1 0 0 0-.8.9v1.3a2.5 2.5 0 0 1-2.3 2.3h-.2a1 1 0 0 0-1 1 1 1 0 0 1-1 1.5 1 1 0 0 0-1 1v1.2A2.5 2.5 0 0 1 9.5 22h-5A2.5 2.5 0 0 1 2 19.5v-15A2.5 2.5 0 0 1 4.5 2h5Z"/><path d="M14 10.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/><path d="M6 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/><path d="M10 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></>,
-        server: <><rect width="2" height="2" x="11" y="2" /><rect width="2" height="2" x="11" y="6" /><rect width="2" height="2" x="11" y="10" /><path d="M6 20h4"/><path d="M8 16v4"/><path d="M6 4h4"/><path d="M8 2v2"/><path d="M20 12h-8"/><path d="M16 10v4"/><path d="M18 6h-8"/><path d="M14 4v4"/></>
+        server: <><rect width="2" height="2" x="11" y="2" /><rect width="2" height="2" x="11" y="6" /><rect width="2" height="2" x="11" y="10" /><path d="M6 20h4"/><path d="M8 16v4"/><path d="M6 4h4"/><path d="M8 2v2"/><path d="M20 12h-8"/><path d="M16 10v4"/><path d="M18 6h-8"/><path d="M14 4v4"/></>,
+        'arrow-left': <><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></>,
+        'shopping-bag': <><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></>
     };
     return <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{icons[name]}</svg>;
 };
@@ -255,49 +257,117 @@ const UploadForm = ({ onUpload, loading }) => {
     );
 };
 
-const RecommendationGrid = ({ items, title }) => {
+// UPDATED: Now clickable!
+const RecommendationGrid = ({ items, title, onProductClick }) => {
     if (!items || items.length === 0) return null;
     return (
       <div className="mt-16">
-        <h2 className="text-3xl font-bold text-center mb-8 font-manrope text-slate-800">{title}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {title && <h2 className="text-3xl font-bold text-center mb-8 font-manrope text-slate-800">{title}</h2>}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
 
           {items.map((item, index) => (
             <div
               key={index}
-              className="bg-white p-4 shadow-lg rounded-2xl border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              onClick={() => onProductClick(item)} // Handle click
+              className="bg-white p-4 shadow-lg rounded-2xl border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
             >
-              <div className="bg-slate-100 rounded-xl mb-4 overflow-hidden">
+              <div className="bg-slate-100 rounded-xl mb-4 overflow-hidden relative">
                 <img
                   src={item.image_url}
-                  alt={`Recommended item ${index + 1}`}
-                  className="w-full h-64 object-contain transition-transform duration-300 hover:scale-105"
+                  alt={item.name || `Product ${index}`}
+                  className="w-full h-64 object-contain transition-transform duration-500 group-hover:scale-105"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = 'https://placehold.co/300x400/E2E8F0/CCCCCC?text=Image+Error';
                   }}
                 />
+                
+                {item.price && (
+                    <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold shadow-sm text-slate-800">
+                        ₹{item.price}
+                    </div>
+                )}
               </div>
   
-              {/* Remove this line to hide image name */}
-              {/* <h3 className="font-semibold truncate font-manrope text-slate-800">{item.name || item.filename}</h3> */}
+              {item.name && <h3 className="font-semibold truncate font-manrope text-slate-800 mb-2">{item.name}</h3>}
   
-              <p className="text-sm text-slate-600 truncate">
-                👕 {item.metadata?.gender || 'N/A'} |
-                🎯 {item.metadata?.articleType || 'N/A'} |
-                🎨 {item.metadata?.baseColour || 'N/A'} |
-                🧢 {item.metadata?.usage || 'N/A'}
-              </p>
+              <div className="text-sm text-slate-600 flex flex-wrap gap-2">
+                {item.metadata?.gender && <span className="bg-slate-50 px-2 py-0.5 rounded text-xs border border-slate-200">{item.metadata.gender}</span>}
+                {item.metadata?.articleType && <span className="bg-slate-50 px-2 py-0.5 rounded text-xs border border-slate-200">{item.metadata.articleType}</span>}
+                {item.metadata?.baseColour && <span className="bg-slate-50 px-2 py-0.5 rounded text-xs border border-slate-200" style={{borderLeft: `4px solid ${item.metadata.baseColour.toLowerCase()}`}}>{item.metadata.baseColour}</span>}
+              </div>
             </div>
           ))}
         </div>
       </div>
     );
-  };
-  
-  
+};
 
-const RecommendPage = () => {
+// NEW: Product Detail Page Component
+const ProductDetailsPage = ({ product, onBack }) => {
+    if (!product) return null;
+  
+    return (
+      <div className="container mx-auto p-6 pt-32 min-h-screen">
+         <button onClick={onBack} className="mb-8 flex items-center text-slate-600 hover:text-purple-600 transition-colors font-medium">
+            <Icon name="arrow-left" className="w-5 h-5 mr-2"/> Back to results
+         </button>
+         <div className="grid md:grid-cols-2 gap-12 items-start">
+            {/* Image Section */}
+            <div className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 flex items-center justify-center overflow-hidden">
+               <img src={product.image_url} alt={product.name} className="max-h-[600px] w-full object-contain hover:scale-105 transition-transform duration-500" />
+            </div>
+            
+            {/* Details Section */}
+            <div>
+               <div className="flex flex-wrap items-center gap-3 mb-6">
+                  {product.metadata?.gender && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-bold tracking-wide uppercase">{product.metadata.gender}</span>}
+                  {product.metadata?.articleType && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-bold tracking-wide uppercase">{product.metadata.articleType}</span>}
+               </div>
+               
+               <h1 className="text-4xl md:text-5xl font-bold text-slate-900 font-manrope mb-6 leading-tight">{product.name}</h1>
+               <div className="text-4xl font-bold text-slate-800 mb-10">₹{product.price}</div>
+               
+               {/* Features Grid */}
+               <div className="bg-slate-50 p-8 rounded-3xl border border-slate-200 mb-10">
+                  <h3 className="font-bold text-slate-900 mb-6 text-xl">Product Features</h3>
+                  <div className="grid grid-cols-2 gap-y-6 text-base">
+                     <div>
+                        <div className="text-slate-500 text-sm mb-1">Color</div>
+                        <div className="font-semibold text-slate-900 flex items-center gap-3">
+                           {product.metadata?.baseColour && (
+                               <span className="w-6 h-6 rounded-full border border-slate-300 shadow-sm" style={{backgroundColor: product.metadata.baseColour.toLowerCase()}}></span>
+                           )}
+                           {product.metadata?.baseColour || 'Multi'}
+                        </div>
+                     </div>
+                     <div>
+                        <div className="text-slate-500 text-sm mb-1">Category</div>
+                        <div className="font-semibold text-slate-900">{product.metadata?.articleType || 'General'}</div>
+                     </div>
+                     <div>
+                        <div className="text-slate-500 text-sm mb-1">Ideal For</div>
+                        <div className="font-semibold text-slate-900">{product.metadata?.gender || 'Unisex'}</div>
+                     </div>
+                     <div>
+                        <div className="text-slate-500 text-sm mb-1">Material</div>
+                        <div className="font-semibold text-slate-900">Premium Cotton Blend</div>
+                     </div>
+                  </div>
+               </div>
+               
+               <div className="flex gap-4">
+                   <button className="flex-1 bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-black transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 text-lg transform hover:-translate-y-1">
+                      <Icon name="shopping-bag" className="w-5 h-5" /> Add to Cart
+                   </button>
+               </div>
+            </div>
+         </div>
+      </div>
+    );
+};
+
+const RecommendPage = ({ onProductClick }) => {
     const [recommendations, setRecommendations] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -313,7 +383,18 @@ const RecommendPage = () => {
             const response = await fetch("https://modelbynikhil-fashion-recommendation-api.hf.space/recommend", { method: "POST", body: formData });
             if (!response.ok) throw new Error("Failed to get recommendations. Please try another image.");
             const data = await response.json();
-            setRecommendations(data.recommendations || []);
+            
+            // Map data to ensure consistency with Search results and ProductDetail expectations
+            const mappedData = (data.recommendations || data || []).map(item => ({
+                ...item,
+                metadata: item.metadata || {
+                    gender: item.gender,
+                    articleType: item.articleType,
+                    baseColour: item.baseColour || item.color
+                }
+            }));
+            
+            setRecommendations(mappedData);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -326,12 +407,13 @@ const RecommendPage = () => {
             <UploadForm onUpload={handleUpload} loading={loading} />
             {loading && <div className="text-center text-purple-600 mt-8 font-semibold">Loading recommendations...</div>}
             {error && <div className="text-center text-red-600 mt-8 bg-red-100 p-3 rounded-lg border border-red-200">{error}</div>}
-            <RecommendationGrid items={recommendations} title="Our Recommendations" />
+            {/* Pass onProductClick */}
+            <RecommendationGrid items={recommendations} title="Our Recommendations" onProductClick={onProductClick} />
         </div>
     );
 };
 
-const SearchRecommendPage = ({ query }) => {
+const SearchRecommendPage = ({ query, onProductClick }) => {
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
@@ -345,10 +427,30 @@ const SearchRecommendPage = ({ query }) => {
             };
             setLoading(true);
             try {
-                const res = await fetch(`https://modelbynikhil-fashion-search-api.hf.space/recommend?query=${encodeURIComponent(query)}`);
+                const res = await fetch(`https://modelbynikhil-fashion-search-api.hf.space/search?q=${encodeURIComponent(query)}&limit=60`);
                 if (!res.ok) throw new Error("Search failed. Please try again.");
                 const data = await res.json();
-                setResults(data || []);
+                
+                const mappedResults = data.map(item => {
+                    const generatedName = item.name 
+                        ? item.name 
+                        : `${item.gender || ''} ${item.color || ''} ${item.articleType || 'Product'}`.trim();
+
+                    return {
+                        id: item.id,
+                        image_url: item.image_url,
+                        name: generatedName,
+                        price: item.price,
+                        metadata: {
+                            gender: item.gender,
+                            articleType: item.articleType,
+                            baseColour: item.color,
+                            usage: "Fashion" 
+                        }
+                    };
+                });
+
+                setResults(mappedResults || []);
                 setPage(1);
             } catch (err) {
                 console.error("API Error:", err);
@@ -373,7 +475,8 @@ const SearchRecommendPage = ({ query }) => {
             
             {!loading && results.length === 0 && <div className="text-center mt-12 text-slate-600 bg-slate-100 p-6 rounded-2xl">No results found for "{query}". Try a different search term.</div>}
 
-            <RecommendationGrid items={paginatedResults} title="" />
+            {/* Pass onProductClick */}
+            <RecommendationGrid items={paginatedResults} title="" onProductClick={onProductClick} />
 
             {totalPages > 1 && (
                 <div className="flex justify-center items-center mt-10 space-x-4">
@@ -387,14 +490,13 @@ const SearchRecommendPage = ({ query }) => {
 };
 
 const AboutPage = () => {
+    // ... (Same as before)
     const titleRef = useReveal();
-    const p1Ref = useReveal();
     const techTitleRef = useReveal();
     const tech1Ref = useReveal();
     const tech2Ref = useReveal();
     const teamTitleRef = useReveal();
     const teamMemberRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
-
     useEffect(() => {
         teamMemberRefs.forEach((ref) => {
             const element = ref.current;
@@ -409,58 +511,40 @@ const AboutPage = () => {
             return () => observer.disconnect();
         });
     }, [teamMemberRefs]);
-
     const team = [
         { name: "Harsh Vardhan", role: "UI/UX Designer" },
         { name: "Jatin", role: "Frontend Architect" },
         { name: "Nalin", role: "Product Manager" },
         { name: "Nikhil", role: "AI & Backend" }
     ];
-
     return (
         <div className="bg-white pt-32 pb-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
                 <div ref={titleRef} className="text-center reveal opacity-0">
-                    <h2 className="text-4xl font-extrabold text-slate-800 sm:text-5xl font-manrope">
-                        We are ML Engineers not web devlopers
-                    </h2>
-  
+                    <h2 className="text-4xl font-extrabold text-slate-800 sm:text-5xl font-manrope">We are ML Engineers not web devlopers</h2>
                 </div>
-
                 <div className="mt-20">
                     <div ref={techTitleRef} className="text-center reveal opacity-0">
                         <h3 className="text-5xl font-extrabold text-slate-800 font-manrope pb-3">😊</h3>
-                         <h3 className="text-5xl font-extrabold text-slate-800 font-manrope">Tech Stack</h3>
-                       
+                        <h3 className="text-5xl font-extrabold text-slate-800 font-manrope">Tech Stack</h3>
                     </div>
                     <div className="mt-12 grid gap-8 md:grid-cols-2">
                         <div ref={tech1Ref} className="bg-slate-50 p-8 rounded-2xl border border-slate-200 reveal opacity-0" style={{transitionDelay: '400ms'}}>
-                            <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-purple-100 text-purple-600">
-                                <Icon name="brain" />
-                            </div>
+                            <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-purple-100 text-purple-600"><Icon name="brain" /></div>
                             <h4 className="mt-6 text-xl font-bold text-slate-800">Deep Learning Backend</h4>
-                            <p className="mt-2 text-base text-slate-600">
-                                The core of our recommendation engine uses a pre-trained ResNet50 model to extract feature vectors from clothing images. This allows us to find items that are not just similar in color or category, but also in texture, pattern, and style.
-                            </p>
+                            <p className="mt-2 text-base text-slate-600">The core of our recommendation engine uses a pre-trained ResNet50 model to extract feature vectors from clothing images. This allows us to find items that are not just similar in color or category, but also in texture, pattern, and style.</p>
                         </div>
                         <div ref={tech2Ref} className="bg-slate-50 p-8 rounded-2xl border border-slate-200 reveal opacity-0" style={{transitionDelay: '600ms'}}>
-                             <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-indigo-100 text-indigo-600">
-                                <Icon name="server" />
-                            </div>
+                            <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-indigo-100 text-indigo-600"><Icon name="server" /></div>
                             <h4 className="mt-6 text-xl font-bold text-slate-800">API & Frontend</h4>
-                            <p className="mt-2 text-base text-slate-600">
-                                A robust FastAPI server handles the image uploads and similarity searches, delivering results quickly. The frontend is built with React and Tailwind CSS for a modern, responsive, and interactive user experience.
-                            </p>
+                            <p className="mt-2 text-base text-slate-600">A robust FastAPI server handles the image uploads and similarity searches, delivering results quickly. The frontend is built with React and Tailwind CSS for a modern, responsive, and interactive user experience.</p>
                         </div>
                     </div>
                 </div>
-
                 <div className="mt-20">
                     <div ref={teamTitleRef} className="text-center reveal opacity-0">
                         <h3 className="text-3xl font-extrabold text-slate-800 font-manrope">Meet Team Klaro</h3>
-                        <p className="mt-4 text-lg text-slate-600">
-                            The passionate individuals behind this project.
-                        </p>
+                        <p className="mt-4 text-lg text-slate-600">The passionate individuals behind this project.</p>
                     </div>
                     <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
                         {team.map((member, index) => (
@@ -482,6 +566,10 @@ export default function App() {
     const [page, setPage] = useState('home');
     const [searchQuery, setSearchQuery] = useState('');
     const [activeHash, setActiveHash] = useState('#home');
+    
+    // NEW State for Product Details
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [previousPage, setPreviousPage] = useState('home');
 
     const navigate = (targetPage, hash) => {
         setPage(targetPage);
@@ -503,7 +591,6 @@ export default function App() {
     useEffect(() => {
         const handleScroll = () => {
             if (page !== 'home') return;
-            
             const sections = ['#home', '#how-it-works', '#styles'];
             const currentSection = sections.find(sectionId => {
                 const sectionEl = document.querySelector(sectionId);
@@ -511,12 +598,10 @@ export default function App() {
                 const rect = sectionEl.getBoundingClientRect();
                 return rect.top <= 150 && rect.bottom >= 150;
             });
-
             if (currentSection && currentSection !== activeHash) {
                 setActiveHash(currentSection);
             }
         };
-
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, [page, activeHash]);
@@ -525,11 +610,20 @@ export default function App() {
         setSearchQuery(query);
         setPage('search');
     };
+    
+    // NEW: Handle clicking a product
+    const handleProductClick = (product) => {
+        setSelectedProduct(product);
+        setPreviousPage(page); // Remember where we came from
+        setPage('product');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     const renderPage = () => {
         switch (page) {
-            case 'recommend': return <RecommendPage />;
-            case 'search': return <SearchRecommendPage query={searchQuery} />;
+            case 'recommend': return <RecommendPage onProductClick={handleProductClick} />;
+            case 'search': return <SearchRecommendPage query={searchQuery} onProductClick={handleProductClick} />;
+            case 'product': return <ProductDetailsPage product={selectedProduct} onBack={() => setPage(previousPage)} />;
             case 'about': return <AboutPage />;
             case 'home':
             default: return <LandingPage />;
